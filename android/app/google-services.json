@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1035900139131",
+    "project_id": "fbexample-459e0",
+    "storage_bucket": "fbexample-459e0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035900139131:android:a77eec564686abe34bd4de",
+        "android_client_info": {
+          "package_name": "com.fbexample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1035900139131-o6b676a9364iobpur2u1889lgh807dfg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fbexample",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "1035900139131-dfou2an99s8r4ohm5ffvadi86r2gffog.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9-xx-wWdZDcHPxWOrARMW5wx41DIIHZo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1035900139131-dfou2an99s8r4ohm5ffvadi86r2gffog.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
