@@ -10,6 +10,8 @@ import LoginScreen from './LoginPage/LoginScreen';
 import SingupScreen from './SignUpPage/SingupScreen';
 import ChatScreen from './ChatPage/ChatScreen';
 import MessageBoxScreen from './MessageBox/MessageBoxScreen';
+import ForumDetail from './HomePage/ForumDetail';
+import AddForum from './HomePage/AddForum';
 
 
 
@@ -19,6 +21,8 @@ function HomeStackScreen() {
     return (
         <HomeStack.Navigator >
             <HomeStack.Screen name="HomeScreen" component={HomeScreen} options={{ tabBarShowLabel: false, headerShown: false }} />
+            <HomeStack.Screen name="ForumDetail" component={ForumDetail} options={{ tabBarShowLabel: false, headerShown: false }} />
+            <HomeStack.Screen name="AddForum" component={AddForum} options={{ tabBarShowLabel: false, headerShown: false }} />
         </HomeStack.Navigator>
     );
 }

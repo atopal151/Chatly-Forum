@@ -112,7 +112,7 @@ const SignUpScreen = () => {
         <Text style={styles.buttonText}>Kayıt Ol</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => { navigation.navigate("Login") }}>
-        <Text style={styles.text1}>Hesabın var mı? Giriş yap!</Text>
+        <Text style={styles.text1}>Hesabın var mı? {<Text style={{fontWeight:900}}>Giriş yap!</Text>}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -161,6 +161,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#91488D',
     paddingVertical: 12,
     paddingHorizontal: 24,
+    alignItems:"center",
+    width:"50%",
     borderRadius: 25,
     margin: 20
   },

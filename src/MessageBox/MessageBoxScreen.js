@@ -50,7 +50,7 @@ export default class MessageBoxScreen extends Component {
                     <Image source={require('../../assets/pp.png')} style={styles.photo} />
                     <View>
                     <Text style={styles.userNameText}>{userName}</Text>
-                    <Text style={styles.userNameText}>{userMail}</Text>
+                    <Text style={styles.userNameText2}>{userMail}</Text>
                     </View>
                 </View>
                 <FlatList
@@ -89,11 +89,17 @@ const styles = StyleSheet.create({
         alignItems:"center"
     },
     photo: {
-        height: 60,
-        width: 60
+        height: 50,
+        width: 50
     },
     userNameText:{
         fontSize:16,
+        fontWeight:800,
+        color:"black",
+        marginLeft:5
+    },
+    userNameText2:{
+        fontSize:14,
         fontWeight:300,
         color:"black",
         marginLeft:5
@@ -116,7 +122,7 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 25,
         borderTopStartRadius: 25,
         borderBottomRightRadius: 25,
-        backgroundColor: '#F36DC2',
+        backgroundColor: '#8232E9',
     },
     otherMessage: {
         alignSelf: 'center',
