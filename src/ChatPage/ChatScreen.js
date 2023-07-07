@@ -6,7 +6,6 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import UserListItem from '../component/UserListItem';
@@ -23,11 +22,12 @@ class ChatScreen extends Component {
       <SafeAreaView style={styles.container}>
         <View style={styles.body1}>
           <View style={styles.borderstyle}>
+            
             <TextInput
               style={styles.input}
-              placeholder="Arama yapın"
+              placeholder="Arama yapın" 
               placeholderTextColor="#888"
-              onChangeText={(text) => this.setState({ searchQuery: text })}
+              onChangeText={(text) => this.setState({ searchQuery: text })} // Filter
             />
             <Icon name={'search'} size={20} color="grey" />
           </View>
@@ -39,21 +39,21 @@ class ChatScreen extends Component {
                 .filter((user) =>
                   user.name
                     .toLowerCase()
-                    .includes(this.state.searchQuery.toLowerCase())
+                    .includes(this.state.searchQuery.toLowerCase()) // Filter function
                 )
-                .map((user) => (
+                .map((user) => ( // User Map
                   <TouchableOpacity
                     onPress={() =>
-                        navigation.navigate('MessageBoxScreen', {
-                            userName: user.name,
-                            userMail: user.email,
-                            userPhoto: user.profileImage,
-                          })
+                      navigation.navigate('MessageBoxScreen', {
+                        userName: user.name,
+                        userMail: user.email,
+                        userPhoto: user.profileImage,
+                      })
                     }
                     key={user.id}
                   >
                     <UserListItem
-                      key={user.id}
+                      key={user.id} // User List
                       name={user.name}
                       email={user.email}
                       profileImage={user.profileImage}
@@ -140,7 +140,7 @@ const userList = [
     email: 'zeynep@example.com',
     profileImage: require('../../assets/pp.png'),
   },
-  
+
 ];
 
 

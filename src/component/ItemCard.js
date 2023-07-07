@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 const ItemCard = ({ title, description, image, onPress }) => {
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
+    <TouchableOpacity style={styles.container} onPress={onPress}> 
       <View style={styles.content}>
         <Image source={{ uri: image }} style={styles.image} />
         <View style={styles.textContainer}>

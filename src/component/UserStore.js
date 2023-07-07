@@ -6,6 +6,7 @@ class UserStore {
     error = "";
 
     constructor() {
+        // Object Make Observable and function add action
         makeObservable(this, {
             user: observable,
             setUser: action.bound

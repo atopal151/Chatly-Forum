@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, SafeAreaView, Alert, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, SafeAreaView, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ItemCard from '../component/ItemCard';
 import { withNavigation } from '@react-navigation/compat';
 import UserStore from '../component/UserStore';
-import { fonts } from 'react-native-elements/dist/config';
 
 
 class HomeScreen extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -25,6 +23,7 @@ class HomeScreen extends Component {
             searchQuery: ''
         });
     };
+
     handleSearchQueryChange = (text) => {
         const { itemCardData } = this.props;
         const filteredData = itemCardData.filter(item => item.title.toLowerCase().includes(text.toLowerCase()));
@@ -34,10 +33,7 @@ class HomeScreen extends Component {
         });
     };
 
-
     render() {
-
-
         const itemCardData = [
             {
                 title: "Yeni Ürün Lansmanı",
@@ -87,7 +83,6 @@ class HomeScreen extends Component {
                             onChangeText={this.handleSearchQueryChange}
                             onBlur={() => this.setState({ searchVisible: false })}
                         />
-
                     )}
                     {!searchVisible && (
                         <Text style={styles.userTitle} ellipsizeMode="tail" numberOfLines={1}>Hoşgeldin {<Text style={{fontWeight:700}} >{UserStore.user}</Text>
@@ -135,7 +130,6 @@ class HomeScreen extends Component {
                         <Text style={styles.categoryText}>Otomotiv</Text>
                     </TouchableOpacity>
                 </ScrollView>
-
                 <View style={styles.body}>
                     <ScrollView>
                         {displayedItemCardData.map((item, index) => (
@@ -238,7 +232,6 @@ const styles = StyleSheet.create({
         fontSize:15,
         maxWidth: 200, overflow: 'hidden' 
     }
-
 });
 
 export default withNavigation(HomeScreen);
