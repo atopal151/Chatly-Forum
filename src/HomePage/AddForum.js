@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet, View, SafeAreaView, TextInput, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, View, SafeAreaView, TextInput, TouchableOpacity, Switch } from 'react-native';
 import firestore from "@react-native-firebase/firestore"
 
 export default class AddForum extends Component {
@@ -8,14 +8,39 @@ export default class AddForum extends Component {
     this.state = {
       messages: [],
       titletext: '',
-      descriptiontext: ''
+      descriptiontext: '',
+      categories: [
+        { id: 1, name: 'Teknoloji', checked: false },
+        { id: 2, name: 'Spor', checked: false },
+        { id: 3, name: 'Moda', checked: false },
+        { id: 4, name: 'Yemek', checked: false },
+        { id: 5, name: 'Seyahat', checked: false },
+        { id: 6, name: 'Müzik', checked: false },
+        { id: 7, name: 'Evcil Hayvanlar', checked: false },
+        { id: 8, name: 'Sağlık ve Fitness', checked: false },
+        { id: 9, name: 'Oyunlar', checked: false },
+        { id: 10, name: 'Film ve Dizi', checked: false },
+      ],
     };
   }
 
+  handleCategoryToggle = (categoryId) => {
+    const { categories } = this.state;
+    const updatedCategories = categories.map((category) =>
+      category.id === categoryId ? { ...category, checked: !category.checked } : category
+    );
+    this.setState({ categories: updatedCategories });
+  };
+
   render() {
-    const { titletext, descriptiontext } = this.state;
+    const { titletext, descriptiontext, categories } = this.state;
     return (
       <SafeAreaView style={styles.container}>
+        <View style={{ margin: 15 }}>
+          <Text style={{ fontSize: 15, fontWeight: 700, }}>
+            {<Text style={{ color: "#8232E9" }}>Forum</Text>}'da bir tartışma konusu başlat...
+          </Text>
+        </View>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
@@ -36,12 +61,28 @@ export default class AddForum extends Component {
             onChangeText={(descriptiontext) => this.setState({ descriptiontext })}
           />
         </View>
+        <View style={styles.categoryContainer}>
+          {categories.map((category) => (
+            <View key={category.id} style={styles.categoryItem}>
+              <Switch 
+                value={category.checked}
+                onValueChange={() => this.handleCategoryToggle(category.id)}
+                thumbColor={category.checked ? '#8232E9' : '#8232E9'}
+                trackColor={{ false: 'grey.100', true: '#d6afee' }}
+              />
+              <Text style={{ marginLeft: 5 }}>{category.name}</Text>
+            </View>
+          ))}
+        </View>
         <TouchableOpacity style={styles.categoryButton} onPress={() => {
+          const selectedCategories = categories.filter((category) => category.checked);
+          const categoryNames = selectedCategories.map((category) => category.name);
           firestore()
             .collection('forum')
             .add({
               title: titletext,
               description: descriptiontext,
+              categories: categoryNames,
             })
             .then(() => {
               console.log('Forum added!');
@@ -103,5 +144,16 @@ const styles = StyleSheet.create({
     height: 40,
     margin: 10,
     color: '#333',
+  },
+  categoryContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 10,
+    marginLeft: 10,
+  },
+  categoryItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    margin: 10,
   },
 });
