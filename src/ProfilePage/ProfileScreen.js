@@ -1,20 +1,35 @@
 import React from 'react';
-import { View, StyleSheet, Image, SafeAreaView, Text } from 'react-native';
+import { View, StyleSheet, Image, SafeAreaView, Text, TouchableOpacity } from 'react-native';
 import { Divider } from 'react-native-elements';
 import Icon from "react-native-vector-icons/Ionicons"
+import auth from '@react-native-firebase/auth';
+import userStore from '../component/UserStore';
+import {observer} from "mobx-react/native";
 
-const catoegories = (icon, title) => {
-  return <View style={styles.roww1}>
-    <View style={styles.row1}>
-      <Icon name={icon} size={20} color="grey" />
+
+const catoegories = (icon, title, onPress) => {
+  return (
+
+    <View style={styles.roww1}>
+      <View style={styles.row1}>
+        <TouchableOpacity onPress={onPress}>
+          <Icon name={icon} size={20} color="grey" />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.row2}>
+        <TouchableOpacity onPress={onPress}>
+          <Text style={styles.text2}> {title}</Text>
+        </TouchableOpacity>
+      </View>
     </View>
-    <View style={styles.row2}>
-      <Text style={styles.text2}> {title}</Text>
-    </View>
-  </View>;
+  );
 };
 
 class ProfileScreen extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
@@ -24,7 +39,7 @@ class ProfileScreen extends React.Component {
           resizeMode="cover"
         /></View>
         <View style={styles.body1}>
-          <Text style={styles.text1}>Jhon CARTER</Text>
+          <Text style={styles.text1}>{userStore.user}</Text>
           <Text style={styles.text2}>Fashion Model</Text>
         </View>
         <View style={styles.body2}>
@@ -61,13 +76,20 @@ class ProfileScreen extends React.Component {
           <Divider />
         </View>
         <View style={styles.content2}>
-          {catoegories("heart", "favorilerin")}
-          {catoegories("hammer", "Ayarlar")}
-          {catoegories("glasses-outline", "Search")}
-          {catoegories("image", "Profil Fotoğrafı")}
-          {catoegories("journal", "Ödeme")}
-          {catoegories("location", "Konum")}
-          {catoegories("power", "Oturumu Kapat")}
+          {catoegories("heart", "favorilerin", () => { })}
+          {catoegories("hammer", "Ayarlar", () => { })}
+          {catoegories("glasses-outline", "Search", () => { })}
+          {catoegories("image", "Profil Fotoğrafı", () => { })}
+          {catoegories("journal", "Ödeme", () => { })}
+          {catoegories("location", "Konum", () => { })}
+          {catoegories("power", "Oturumu Kapat", () => {
+            auth()
+              .signOut()
+              .then(() => { 
+                console.log('User signed out!')
+                this.props.navigation.navigate("Login")
+              });
+          })}
         </View>
       </SafeAreaView>
     );
@@ -79,8 +101,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white"
   },
-  roww1: { flexDirection: "row", flex: 1, },
-  roww2: { flexDirection: "row", flex: 1, },
+  roww1: { flexDirection: "row", flex: 1 },
+  roww2: { flexDirection: "row", flex: 1 },
   row1: { alignItems: "center", justifyContent: "center", flex: 1 },
   row2: { alignItems: "flex-start", justifyContent: "center", flex: 10, marginLeft: 20 },
 
@@ -121,7 +143,8 @@ const styles = StyleSheet.create({
   text1: {
     fontSize: 19,
     fontWeight: 700,
-    color: "black"
+    color: "black",
+    marginRight:10
   },
   text2: {
     fontSize: 15,
@@ -131,3 +154,4 @@ const styles = StyleSheet.create({
 });
 
 export default ProfileScreen;
+

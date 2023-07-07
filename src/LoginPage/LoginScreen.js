@@ -1,15 +1,28 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
+import userStore from '../component/UserStore';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-const LoginScreen = () => {
+class LoginScreen extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: '',
+      password: '',
+    };
+  }
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const navigation = useNavigation();
-
-  const handleAlert = () => {
+  componentDidMount() {
+    if (auth().currentUser !== null) {
+      const currentUser = auth().currentUser.uid;
+      userStore.setUser(currentUser)
+      console.log('User signed in anonymously');
+      console.log(userStore.user);
+      this.props.navigation.navigate("TabBar");
+    }
+  }
+  handleAlert = () => {
     Alert.alert(
       'Uyarı!',
       'Email veya Şifre alanınızı boş bırakamazsınız.',
@@ -20,53 +33,73 @@ const LoginScreen = () => {
     );
   };
 
-  const handleLogin = () => {
-    navigation.navigate("TabBar")
-    /*if (password == "", email == "") {
-      console.log("Şifren veya email boş olamaz");
-      handleAlert();
+  handleLogin = () => {
+    const { email, password } = this.state;
+    const { navigation } = this.props;
+    if (password === "" || email === "") {
+      console.log("Şifre veya email boş olamaz");
+      this.handleAlert();
+    } else {
+
     }
-    else {
-      auth()
-        .signInAnonymously().then(() => {
-          navigation.navigate("TabBar")
-          console.log('User signed in anonymously');
-        })
-        .catch(error => {
-          if (error.code === 'auth/operation-not-allowed') {
-            console.log('Enable anonymous in your firebase console.');
-          }
-          console.error(error);
-        });
-    }*/
+  };
+
+  handleAnonymouslyLogin = () => {
+    auth()
+      .signInAnonymously()
+      .then(() => {
+        const currentUser = auth().currentUser.uid;
+        userStore.setUser(currentUser)
+        console.log('User signed in anonymously');
+        console.log(userStore.user);
+        this.props.navigation.navigate("TabBar");
+      })
+      .catch(error => {
+        if (error.code === 'auth/operation-not-allowed') {
+          console.log('Enable anonymous in your firebase console.');
+        }
+        console.error(error);
+      });
   };
 
 
-  return (
-    <View style={styles.container}>
-      <Image source={require('../../assets/online_forum.jpg')} style={styles.logo} />
-      <TextInput
-        style={styles.input}
-        placeholder="E-posta"
-        value={email}
-        onChangeText={(text) => setEmail(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Şifre"
-        secureTextEntry
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-      />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Giriş Yap</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => { navigation.navigate("SignUp") }}>
-        <Text style={styles.text1}>Hesabın yok mu? {<Text style={{fontWeight:900}}>Kayıt Ol!</Text>}</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
+  render() {
+    const { email, password } = this.state;
+    return (
+      <View style={styles.container}>
+        <Image source={require('../../assets/online_forum.jpg')} style={styles.logo} />
+        <TextInput
+          style={styles.input}
+          placeholder="E-posta"
+          value={email}
+          onChangeText={(text) => this.setState({ email: text })}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Şifre"
+          secureTextEntry
+          value={password}
+          onChangeText={(text) => this.setState({ password: text })}
+        />
+        <TouchableOpacity style={styles.button} onPress={this.handleLogin}>
+          <Text style={styles.buttonText}>Giriş Yap</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => { this.props.navigation.navigate("SignUp") }}>
+          <Text style={styles.text1}>Hesabın yok mu? <Text style={{ fontWeight: '900' }}>Kayıt Ol!</Text></Text>
+        </TouchableOpacity>
+        <View style={styles.fastLog}>
+          <TouchableOpacity style={styles.AnonymouslyButton} onPress={this.handleAnonymouslyLogin}>
+            <Icon name="person" size={20} color="white" style={styles.AnonymouslyIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.GoogleButton} onPress={() => { }}>
+            <Icon name="logo-google" size={20} color="white" style={styles.AnonymouslyIcon} />
+          </TouchableOpacity>
+        </View>
+
+      </View>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -103,12 +136,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   button: {
-    backgroundColor: '#FDBC68',
+    backgroundColor: '#8232E9',
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 25,
-    alignItems:"center",
-    width:"50%",
+    alignItems: "center",
+    width: "50%",
     margin: 20
   },
   buttonText: {
@@ -116,7 +149,31 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
+  AnonymouslyButton: {
+    backgroundColor: '#7f8fa6',
+    paddingVertical: 9,
+    paddingHorizontal: 9,
+    borderRadius: 50,
+    alignItems: "center",
+    margin: 20
+  },
+  GoogleButton: {
+    backgroundColor: '#e55039',
+    paddingVertical: 9,
+    paddingHorizontal: 9,
+    borderRadius: 50,
+    alignItems: "center",
+    margin: 20
+  },
+  AnonymouslyIcon: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  fastLog: {
+    flexDirection: "row"
+  }
+
+
 });
 
 export default LoginScreen;
-

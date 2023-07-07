@@ -17,6 +17,7 @@
     "@react-navigation/compat": "^5.3.20",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
+    "mobx": "^6.9.0",
     "react": "18.2.0",
     "react-native": "0.71.8",
     "react-native-elements": "^3.4.3",

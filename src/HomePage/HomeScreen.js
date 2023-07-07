@@ -1,13 +1,42 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, SafeAreaView, Alert, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ItemCard from '../component/ItemCard';
 import { withNavigation } from '@react-navigation/compat';
+import UserStore from '../component/UserStore';
+import { fonts } from 'react-native-elements/dist/config';
 
 
 class HomeScreen extends Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            searchVisible: false,
+            searchQuery: '',
+            filteredItemCardData: []
+        };
+    }
+
+    handleSearchButtonPress = () => {
+        const { searchVisible } = this.state;
+        this.setState({
+            searchVisible: !searchVisible,
+            searchQuery: ''
+        });
+    };
+    handleSearchQueryChange = (text) => {
+        const { itemCardData } = this.props;
+        const filteredData = itemCardData.filter(item => item.title.toLowerCase().includes(text.toLowerCase()));
+        this.setState({
+            searchQuery: text,
+            filteredItemCardData: filteredData
+        });
+    };
+
+
     render() {
+
 
         const itemCardData = [
             {
@@ -41,16 +70,30 @@ class HomeScreen extends Component {
                 onPress: () => { console.log("ddd"); }
             }
         ];
-
+        const { searchVisible, searchQuery, filteredItemCardData } = this.state;
         const { navigation } = this.props;
+        const displayedItemCardData = searchQuery ? filteredItemCardData : itemCardData;
         return (
 
             <SafeAreaView style={styles.container}>
                 <View style={styles.header}>
-
                     <Image source={require('../../assets/pp.png')} style={styles.logo} />
-                    <Text style={styles.categoryText}>Hoşgeldin {<Text style={{ fontWeight: "bold" }}>Jhon...</Text>}</Text>
-                    <TouchableOpacity style={styles.searchButton}>
+                    {searchVisible && (
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Arama yapın..."
+                            placeholderTextColor="#888"
+                            value={searchQuery}
+                            onChangeText={this.handleSearchQueryChange}
+                            onBlur={() => this.setState({ searchVisible: false })}
+                        />
+
+                    )}
+                    {!searchVisible && (
+                        <Text style={styles.userTitle} ellipsizeMode="tail" numberOfLines={1}>Hoşgeldin {<Text style={{fontWeight:700}} >{UserStore.user}</Text>
+                    }</Text>
+                        )}
+                    <TouchableOpacity style={styles.searchButton} onPress={this.handleSearchButtonPress}>
                         <Icon name="search" size={24} color="#888" style={styles.searchIcon} />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddForum')}>
@@ -95,7 +138,7 @@ class HomeScreen extends Component {
 
                 <View style={styles.body}>
                     <ScrollView>
-                        {itemCardData.map((item, index) => (
+                        {displayedItemCardData.map((item, index) => (
                             <ItemCard
                                 key={index}
                                 title={item.title}
@@ -133,6 +176,13 @@ const styles = StyleSheet.create({
     body: {
         flex: 25,
         margin: 5
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 15,
+        padding: 10,
+        width: "40%",
     },
     searchButton: {
         paddingHorizontal: 10,
@@ -184,6 +234,13 @@ const styles = StyleSheet.create({
     addIcon: {
         marginRight: 0,
     },
+    userTitle: {
+        fontSize:15,
+        maxWidth: 200, overflow: 'hidden' 
+    }
+
 });
 
 export default withNavigation(HomeScreen);
+
+

@@ -48,7 +48,7 @@ export default class MessageBoxScreen extends Component {
             <SafeAreaView style={styles.container}>
                 <View style={styles.titleStyle}>
                     <Image source={require('../../assets/pp.png')} style={styles.photo} />
-                    <View>
+                    <View style={styles.userInfo}>
                     <Text style={styles.userNameText}>{userName}</Text>
                     <Text style={styles.userNameText2}>{userMail}</Text>
                     </View>
@@ -82,13 +82,19 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
     },
-
+    userInfo:{
+        marginLeft:20,
+        justifyContent:"center"
+    },
     titleStyle: {
-        margin: 10,
+        marginLeft:15,
         flexDirection:"row",
-        alignItems:"center"
+        alignItems:"center",
+        justifyContent:"flex-start"
+        
     },
     photo: {
+        alignItems:"center",
         height: 50,
         width: 50
     },
