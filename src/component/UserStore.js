@@ -3,15 +3,35 @@ import { Alert } from 'react-native';
 
 class UserStore {
     user = "";
+    mail="";
     error = "";
 
     constructor() {
         // Object Make Observable and function add action
         makeObservable(this, {
             user: observable,
-            setUser: action.bound
+            mail: observable,
+            setUser: action.bound,
+            setMail: action.bound
         })
     }
+
+    async setMail(mail) {
+        this.error = "";
+        this.mail="";
+
+        try {
+            runInAction(() => {
+                this.mail = mail;
+            })
+        } catch (error) {
+            runInAction(() => {
+                this.error = 'Error retrieving information from server.';
+            })
+
+        }
+    }
+
 
     //*async/await methot
     async setUser(user) {

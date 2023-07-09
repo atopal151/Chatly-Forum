@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet, View, SafeAreaView, TextInput, TouchableOpacity, Switch } from 'react-native';
+import { Text, StyleSheet, View, SafeAreaView, TextInput, TouchableOpacity, Switch, Alert } from 'react-native';
 import firestore from "@react-native-firebase/firestore"
 
 export default class AddForum extends Component {
@@ -20,7 +20,19 @@ export default class AddForum extends Component {
         { id: 8, name: 'Sağlık ve Fitness', checked: false },
         { id: 9, name: 'Oyunlar', checked: false },
         { id: 10, name: 'Film ve Dizi', checked: false },
+        { id: 11, name: 'Kitaplar', checked: false },
+        { id: 12, name: 'Sanat', checked: false },
+        { id: 13, name: 'Güzellik', checked: false },
+        { id: 14, name: 'Eğitim', checked: false },
+        { id: 15, name: 'Finans', checked: false },
+        { id: 16, name: 'Otomobil', checked: false },
+        { id: 17, name: 'Yazılım', checked: false },
+        { id: 18, name: 'Fotoğrafçılık', checked: false },
+        { id: 19, name: 'Yoga', checked: false },
+        { id: 20, name: 'Bahçe', checked: false },
+        // Daha fazla kategori eklenebilir
       ],
+      
     };
   }
 
@@ -85,7 +97,14 @@ export default class AddForum extends Component {
               categories: categoryNames,
             })
             .then(() => {
-              console.log('Forum added!');
+              Alert.alert(
+              'Uyarı!',
+              'Paylaşımın alındı. Teşekkürler...',
+              [
+                { text: 'Tamam', onPress: () => {this.props.navigation.goBack()} }
+              ],
+              { cancelable: false }
+            );
             });
         }}>
           <Text style={styles.categoryText}>Paylaş</Text>
@@ -137,7 +156,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     borderColor: 'grey',
     paddingHorizontal: 20,
-    height: 150
+    height: 70
   },
   input: {
     flex: 1,

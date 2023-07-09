@@ -4,7 +4,6 @@ import { Divider } from 'react-native-elements';
 import Icon from "react-native-vector-icons/Ionicons"
 import auth from '@react-native-firebase/auth';
 import userStore from '../component/UserStore';
-import {observer} from "mobx-react/native";
 
 
 const catoegories = (icon, title, onPress) => {
@@ -40,7 +39,7 @@ class ProfileScreen extends React.Component {
         /></View>
         <View style={styles.body1}>
           <Text style={styles.text1}>{userStore.user}</Text>
-          <Text style={styles.text2}>Fashion Model</Text>
+          <Text style={styles.text2}>{userStore.mail}</Text>
         </View>
         <View style={styles.body2}>
           <View style={styles.roww1}>
@@ -56,7 +55,7 @@ class ProfileScreen extends React.Component {
               <Icon name="mail" size={20} color="#8232E9" />
             </View>
             <View style={styles.row2}>
-              <Text style={styles.text2}> nameusername@gmail.com</Text>
+              <Text style={styles.text2}> {userStore.mail}</Text>
             </View>
           </View>
         </View>
@@ -81,7 +80,9 @@ class ProfileScreen extends React.Component {
           {catoegories("glasses-outline", "Search", () => { })}
           {catoegories("image", "Profil Fotoğrafı", () => { })}
           {catoegories("journal", "Ödeme", () => { })}
-          {catoegories("location", "Konum", () => { })}
+          {catoegories("location", "Konum", () => { 
+            console.log(auth().currentUser.uid);
+          })}
           {catoegories("power", "Oturumu Kapat", () => {
             auth()
               .signOut()

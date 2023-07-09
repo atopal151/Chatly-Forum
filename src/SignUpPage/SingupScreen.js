@@ -33,40 +33,30 @@ const SignUpScreen = () => {
         handleAlert();
       }
       else {
-
-        navigation.navigate("Login")
-        //setUyari(' ');
-        //firestore().collection("users").add({ name: name, mail: email })
-        /* auth()
-           .createUserWithEmailAndPassword("email.gmail.com", "password")
-           .then(() => {
-             navigation.navigate("Login")
-             console.log('User account created & signed in!');
-           })
-           .catch(error => {
-             if (error.code === 'auth/email-already-in-use') {
-               console.log('That email address is already in use!');
-             }
-             if (error.code === 'auth/invalid-email') {
-               console.log('That email address is invalid!');
-             }
-             console.error(error);
-           });*/
-
         auth()
-          .createUserWithEmailAndPassword('jane.doe@example.com', 'SuperSecretPassword!')
+          .createUserWithEmailAndPassword(email, password)
           .then(() => {
+            firestore()
+              .collection('users')
+              .doc(auth().currentUser.uid)
+              .set({
+                name: name,
+                email: email,
+                uid: auth().currentUser.uid
+              })
+              .then(() => {
+                console.log('User added!');
+              });
+            navigation.navigate("TabBar")
             console.log('User account created & signed in!');
           })
           .catch(error => {
             if (error.code === 'auth/email-already-in-use') {
               console.log('That email address is already in use!');
             }
-
             if (error.code === 'auth/invalid-email') {
               console.log('That email address is invalid!');
             }
-
             console.error(error);
           });
       }
@@ -112,7 +102,7 @@ const SignUpScreen = () => {
         <Text style={styles.buttonText}>Kayıt Ol</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => { navigation.navigate("Login") }}>
-        <Text style={styles.text1}>Hesabın var mı? {<Text style={{fontWeight:900}}>Giriş yap!</Text>}</Text>
+        <Text style={styles.text1}>Hesabın var mı? {<Text style={{ fontWeight: 900 }}>Giriş yap!</Text>}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -161,8 +151,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#91488D',
     paddingVertical: 12,
     paddingHorizontal: 24,
-    alignItems:"center",
-    width:"50%",
+    alignItems: "center",
+    width: "50%",
     borderRadius: 25,
     margin: 20
   },

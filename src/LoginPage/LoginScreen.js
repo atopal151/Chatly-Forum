@@ -3,6 +3,9 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Alert } fro
 import auth from '@react-native-firebase/auth';
 import userStore from '../component/UserStore';
 import Icon from 'react-native-vector-icons/Ionicons';
+import firestore from "@react-native-firebase/firestore"
+
+
 
 class LoginScreen extends Component {
   constructor(props) {
@@ -13,34 +16,38 @@ class LoginScreen extends Component {
     };
   }
 
-  componentDidMount() {
+  handleControl = async () => {
     if (auth().currentUser !== null) {
-      const currentUser = auth().currentUser.uid;
-      userStore.setUser(currentUser)
-      console.log('User signed in anonymously');
-      console.log(userStore.user);
+      const currentUser = auth().currentUser;
+      await getUserByUID(currentUser.uid);
       this.props.navigation.navigate("TabBar");
+    } else {
+      handleAlert();
     }
-  }
-  handleAlert = () => {
-    Alert.alert(
-      'Uyarı!',
-      'Email veya Şifre alanınızı boş bırakamazsınız.',
-      [
-        { text: 'Tamam', onPress: () => console.log('Tamam pressed') }
-      ],
-      { cancelable: false }
-    );
   };
+
 
   handleLogin = () => {
     const { email, password } = this.state;
-    const { navigation } = this.props;
     if (password === "" || email === "") {
       console.log("Şifre veya email boş olamaz");
       this.handleAlert();
     } else {
-
+      auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(() => {
+          this.handleControl()
+          console.log('User account signed in!');
+        })
+        .catch(error => {
+          if (error.code === 'auth/email-already-in-use') {
+            console.log('That email address is already in use!');
+          }
+          if (error.code === 'auth/invalid-email') {
+            console.log('That email address is invalid!');
+          }
+          console.error(error);
+        });
     }
   };
 
@@ -50,6 +57,17 @@ class LoginScreen extends Component {
       .then(() => {
         const currentUser = auth().currentUser.uid;
         userStore.setUser(currentUser)
+
+        firestore()
+          .collection('users')
+          .doc(auth().currentUser.uid)
+          .set({
+            name: `User` + currentUser,
+            uid: auth().currentUser.uid
+          })
+          .then(() => {
+            console.log('User added!');
+          });
         console.log('User signed in anonymously');
         console.log(userStore.user);
         this.props.navigation.navigate("TabBar");
@@ -62,6 +80,9 @@ class LoginScreen extends Component {
       });
   };
 
+  componentDidMount() {
+    this.handleControl()
+  };
 
   render() {
     const { email, password } = this.state;
@@ -91,7 +112,9 @@ class LoginScreen extends Component {
           <TouchableOpacity style={styles.AnonymouslyButton} onPress={this.handleAnonymouslyLogin}>
             <Icon name="person" size={20} color="white" style={styles.AnonymouslyIcon} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.GoogleButton} onPress={() => { }}>
+          <TouchableOpacity style={styles.GoogleButton} onPress={() => {
+
+          }}>
             <Icon name="logo-google" size={20} color="white" style={styles.AnonymouslyIcon} />
           </TouchableOpacity>
         </View>
@@ -177,3 +200,26 @@ const styles = StyleSheet.create({
 });
 
 export default LoginScreen;
+
+
+const getUserByUID = async (uid) => {
+  try {
+    const documentSnapshot = await firestore().collection('users').doc(uid).get();
+
+    if (documentSnapshot.exists) {
+      const userData = documentSnapshot.data();
+      console.log('User Data:', userData);
+      if (userData && userData.name) {
+        userStore.setUser(userData.name);
+        userStore.setMail(userData.email)
+      }
+      return userData;
+    } else {
+      console.log('User not found');
+      return null;
+    }
+  } catch (error) {
+    console.log('Error retrieving user data:', error);
+    return null;
+  }
+};
