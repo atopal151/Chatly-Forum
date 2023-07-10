@@ -1,5 +1,12 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet, View, SafeAreaView, TextInput, TouchableOpacity, Switch, Alert } from 'react-native';
+import { Text, 
+  StyleSheet, 
+  View, 
+  SafeAreaView, 
+  TextInput, 
+  TouchableOpacity, 
+  Switch, 
+  Alert } from 'react-native';
 import firestore from "@react-native-firebase/firestore"
 
 export default class AddForum extends Component {
@@ -95,6 +102,7 @@ export default class AddForum extends Component {
               title: titletext,
               description: descriptiontext,
               categories: categoryNames,
+              createdAt: firestore.FieldValue.serverTimestamp()
             })
             .then(() => {
               Alert.alert(

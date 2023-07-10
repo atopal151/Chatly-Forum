@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  StyleSheet, 
+  TouchableOpacity, 
+  Image } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import userStore from '../component/UserStore';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -16,7 +22,7 @@ class LoginScreen extends Component {
     };
   }
 
-  handleControl = async () => {
+  handleControl = async () => { //otumu açık olan bir kullanıcı varmı kontrolü yapar
     if (auth().currentUser !== null) {
       const currentUser = auth().currentUser;
       await getUserByUID(currentUser.uid);
@@ -27,7 +33,7 @@ class LoginScreen extends Component {
   };
 
 
-  handleLogin = () => {
+  handleLogin = () => { //oturum açma işlemi yapılan fonksiyon email-password
     const { email, password } = this.state;
     if (password === "" || email === "") {
       console.log("Şifre veya email boş olamaz");
@@ -51,7 +57,7 @@ class LoginScreen extends Component {
     }
   };
 
-  handleAnonymouslyLogin = () => {
+  handleAnonymouslyLogin = () => { //anonim giriş yapmaya yarayan fonksiyon
     auth()
       .signInAnonymously()
       .then(() => {
@@ -106,7 +112,8 @@ class LoginScreen extends Component {
           <Text style={styles.buttonText}>Giriş Yap</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => { this.props.navigation.navigate("SignUp") }}>
-          <Text style={styles.text1}>Hesabın yok mu? <Text style={{ fontWeight: '900' }}>Kayıt Ol!</Text></Text>
+          <Text style={styles.text1}>Hesabın yok mu? <Text style={{ fontWeight: '900' }}>Kayıt Ol!</Text>
+          </Text>
         </TouchableOpacity>
         <View style={styles.fastLog}>
           <TouchableOpacity style={styles.AnonymouslyButton} onPress={this.handleAnonymouslyLogin}>
@@ -202,7 +209,7 @@ const styles = StyleSheet.create({
 export default LoginScreen;
 
 
-const getUserByUID = async (uid) => {
+const getUserByUID = async (uid) => { //kullanıcı uid ye göre veri çeken fonksiyon 
   try {
     const documentSnapshot = await firestore().collection('users').doc(uid).get();
 

@@ -1,5 +1,4 @@
 import { observable, makeObservable, action, runInAction } from 'mobx'
-import { Alert } from 'react-native';
 
 class UserStore {
     user = "";

@@ -1,5 +1,12 @@
 import React, { Component } from 'react';
-import { View, TextInput, StyleSheet, TouchableOpacity, FlatList, Text, SafeAreaView, Image } from 'react-native';
+import { View, 
+    TextInput, 
+    StyleSheet, 
+    TouchableOpacity, 
+    FlatList, 
+    Text, 
+    SafeAreaView, 
+    Image } from 'react-native';
 import Icon from "react-native-vector-icons/Ionicons";
 
 export default class MessageBoxScreen extends Component {
@@ -11,7 +18,7 @@ export default class MessageBoxScreen extends Component {
         };
     }
 
-    sendMessage = () => {
+    sendMessage = () => { //mesaj gönderme fonksiyonu
         const { text, messages } = this.state;
         if (text.trim() === '') {
             return;
@@ -27,7 +34,7 @@ export default class MessageBoxScreen extends Component {
         });
     };
 
-    renderMessage = ({ item }) => {
+    renderMessage = ({ item }) => { // mesaj görünümü
         const { sender, text } = item;
         const isUser = sender === 'user';
 

@@ -1,5 +1,13 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet, View, SafeAreaView, Image, FlatList, TextInput, TouchableOpacity } from 'react-native';
+import {
+    Text,
+    StyleSheet,
+    View,
+    SafeAreaView,
+    FlatList,
+    TextInput,
+    TouchableOpacity
+} from 'react-native';
 import Icon from "react-native-vector-icons/Ionicons";
 
 export default class ForumDetail extends Component {
@@ -12,14 +20,14 @@ export default class ForumDetail extends Component {
         };
     }
 
-    toggleTextInput = () => {
+    toggleTextInput = () => { //forumda yorum yapılacak textboxın görünürlüğünü ayarlar
         this.setState((prevState) => ({
             showTextInput: !prevState.showTextInput
         }));
 
     };
 
-    sendMessage = () => {
+    sendMessage = () => { //mesaj gönderme fonksiyonu
         const { text, messages } = this.state;
         if (text.trim() === '') {
             return;
@@ -36,7 +44,7 @@ export default class ForumDetail extends Component {
         });
     };
 
-    renderMessage = ({ item }) => {
+    renderMessage = ({ item }) => { //mesaj görünümü
         const { sender, text } = item;
         const isUser = sender === 'user';
 
@@ -56,10 +64,11 @@ export default class ForumDetail extends Component {
         return (
             <SafeAreaView style={styles.container}>
                 <View style={styles.headerStyle}>
-                    <Text style={{ fontWeight: "700", color:"white" }}> {itemTitle} </Text>
+                    <Text style={{ fontWeight: "700", color: "white" }}> {itemTitle} </Text>
                 </View>
                 <View style={styles.describeStyle}>
-                    <Text style={{ fontWeight: "700" }}>Açıklama: {<Text style={{ fontWeight: "300" }}>{itemDescription} </Text>}</Text>
+                    <Text style={{ fontWeight: "700" }}>Açıklama: {
+                        <Text style={{ fontWeight: "300" }}>{itemDescription} </Text>}</Text>
                 </View>
                 <View style={styles.divider} />
 
@@ -82,7 +91,8 @@ export default class ForumDetail extends Component {
                                         value={text}
                                         onChangeText={(text) => this.setState({ text })}
                                     />
-                                    <TouchableOpacity style={styles.sendButton} onPress={this.sendMessage}>
+                                    <TouchableOpacity style={styles.sendButton}
+                                        onPress={this.sendMessage}>
                                         <Icon name="send" size={20} color='grey' />
                                     </TouchableOpacity>
                                 </View>
@@ -116,9 +126,9 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        margin:10,
-        borderRadius:25,
-        backgroundColor:"#8232E9"
+        margin: 10,
+        borderRadius: 25,
+        backgroundColor: "#8232E9"
     },
     describeStyle: {
         flex: 1,
@@ -229,7 +239,7 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: 'grey',
         marginVertical: 10,
-        marginLeft:10,
-        marginRight:10
+        marginLeft: 10,
+        marginRight: 10
     },
 });

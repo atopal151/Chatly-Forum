@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Alert
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 import firestore from "@react-native-firebase/firestore"
@@ -7,7 +15,7 @@ import firestore from "@react-native-firebase/firestore"
 
 const SignUpScreen = () => {
 
-  const handleAlert = () => {
+  const handleAlert = () => {//uyarı penceresi
     Alert.alert(
       'Uyarı!',
       'AdSoyad alanınızı veya E-posta alanınızı boş bırakamazsınız.',
@@ -26,7 +34,7 @@ const SignUpScreen = () => {
   const navigation = useNavigation();
 
   const handleLogin = () => {
-
+    //Kullanıcı kaydı oluşturup giriş yapan fonksiyon
     if (password == passwordAgain) {
       if (name == "", email == "", password == "") {
         console.log("Name veya email boş");
@@ -102,7 +110,9 @@ const SignUpScreen = () => {
         <Text style={styles.buttonText}>Kayıt Ol</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => { navigation.navigate("Login") }}>
-        <Text style={styles.text1}>Hesabın var mı? {<Text style={{ fontWeight: 900 }}>Giriş yap!</Text>}</Text>
+        <Text style={styles.text1}>Hesabın var mı?
+          {<Text style={{ fontWeight: 900 }}>Giriş yap!</Text>}
+        </Text>
       </TouchableOpacity>
     </View>
   );

@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, StyleSheet, Image, SafeAreaView, Text, TouchableOpacity } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Image,
+  SafeAreaView,
+  Text,
+  TouchableOpacity
+} from 'react-native';
 import { Divider } from 'react-native-elements';
 import Icon from "react-native-vector-icons/Ionicons"
 import auth from '@react-native-firebase/auth';
@@ -7,8 +14,8 @@ import userStore from '../component/UserStore';
 
 
 const catoegories = (icon, title, onPress) => {
+  //kategori butonu görünümğ ayarlama ve işlevlendirme fonksiyonu
   return (
-
     <View style={styles.roww1}>
       <View style={styles.row1}>
         <TouchableOpacity onPress={onPress}>
@@ -22,6 +29,7 @@ const catoegories = (icon, title, onPress) => {
       </View>
     </View>
   );
+
 };
 
 class ProfileScreen extends React.Component {
@@ -80,13 +88,13 @@ class ProfileScreen extends React.Component {
           {catoegories("glasses-outline", "Search", () => { })}
           {catoegories("image", "Profil Fotoğrafı", () => { })}
           {catoegories("journal", "Ödeme", () => { })}
-          {catoegories("location", "Konum", () => { 
+          {catoegories("location", "Konum", () => {
             console.log(auth().currentUser.uid);
           })}
           {catoegories("power", "Oturumu Kapat", () => {
             auth()
               .signOut()
-              .then(() => { 
+              .then(() => {
                 console.log('User signed out!')
                 this.props.navigation.navigate("Login")
               });
@@ -104,9 +112,17 @@ const styles = StyleSheet.create({
   },
   roww1: { flexDirection: "row", flex: 1 },
   roww2: { flexDirection: "row", flex: 1 },
-  row1: { alignItems: "center", justifyContent: "center", flex: 1 },
-  row2: { alignItems: "flex-start", justifyContent: "center", flex: 10, marginLeft: 20 },
-
+  row1: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1
+  },
+  row2: {
+    alignItems: "flex-start",
+    justifyContent: "center",
+    flex: 10,
+    marginLeft: 20
+  },
   backgroundImage: {
     position: 'absolute',
     top: 8,
@@ -114,8 +130,17 @@ const styles = StyleSheet.create({
     height: 120,
     marginLeft: 30
   },
-  label: { fontSize: 15, fontWeight: 600, color: "grey", margin: 5 },
-  count: { fontSize: 28, fontWeight: 600, color: "black" },
+  label: {
+    fontSize: 15,
+    fontWeight: 600,
+    color: "grey",
+    margin: 5
+  },
+  count: {
+    fontSize: 28,
+    fontWeight: 600,
+    color: "black"
+  },
   content: {
     flex: 2,
     zIndex: 1,
@@ -145,7 +170,7 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: 700,
     color: "black",
-    marginRight:10
+    marginRight: 10
   },
   text2: {
     fontSize: 15,
