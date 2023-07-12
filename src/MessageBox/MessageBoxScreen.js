@@ -56,8 +56,10 @@ export default class MessageBoxScreen extends Component {
                 <View style={styles.titleStyle}>
                     <Image source={require('../../assets/pp.png')} style={styles.photo} />
                     <View style={styles.userInfo}>
-                    <Text style={styles.userNameText}>{userName}</Text>
-                    <Text style={styles.userNameText2}>{userMail}</Text>
+                    <Text style={styles.userNameText} ellipsizeMode="tail"
+                            numberOfLines={1} maxWidth={250} overflow='hidden'>{userName}</Text>
+                    <Text style={styles.userNameText2} ellipsizeMode="tail"
+                            numberOfLines={1} maxWidth={200} overflow='hidden'>{userMail || userName}</Text>
                     </View>
                 </View>
                 <FlatList
@@ -94,7 +96,8 @@ const styles = StyleSheet.create({
         justifyContent:"center"
     },
     titleStyle: {
-        marginLeft:15,
+        margin:10,
+        
         flexDirection:"row",
         alignItems:"center",
         justifyContent:"flex-start"

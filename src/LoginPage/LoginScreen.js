@@ -62,7 +62,7 @@ class LoginScreen extends Component {
       .signInAnonymously()
       .then(() => {
         const currentUser = auth().currentUser.uid;
-        userStore.setUser(currentUser)
+        userStore.setUser("User"+currentUser)
 
         firestore()
           .collection('users')

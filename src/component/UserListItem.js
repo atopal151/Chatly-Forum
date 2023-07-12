@@ -12,7 +12,7 @@ const UserListItem = ({ name, email, profileImage }) => {
       <Image source={profileImage} style={styles.profileImage} />
       <View style={styles.userInfo}>
         <Text style={styles.name}>{name}</Text>
-        <Text style={styles.email}>{email}</Text>
+        <Text style={styles.email}>{email || "--"}</Text>
       </View>
     </View>
   );

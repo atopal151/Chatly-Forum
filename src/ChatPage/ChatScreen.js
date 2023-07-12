@@ -10,11 +10,33 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import UserListItem from '../component/UserListItem';
 import { withNavigation } from '@react-navigation/compat';
+import firestore from "@react-native-firebase/firestore";
+import auth from "@react-native-firebase/auth"
 
 class ChatScreen extends Component {
   state = {
     searchQuery: '',
+    userData:[]
   };
+
+  
+
+  loadUserData = () => { //paylaşılmış olan kullanıcı verilerini getiren fonksiyon
+    firestore()
+      .collection('chats')
+      .doc(auth().currentUser.uid)
+      .collection('user')
+      .onSnapshot((snapshot) => {
+        const userData = snapshot.docs.map(doc => doc.data()).reverse();
+        this.setState({ userData });
+        console.log(userData);
+      }, (error) => {
+        console.log('Error loading forum data:', error);
+      });
+  };
+  componentDidMount(){
+    this.loadUserData()
+  }
 
   render() {
     const { navigation } = this.props;
@@ -35,7 +57,7 @@ class ChatScreen extends Component {
         <View style={styles.body2}>
           <ScrollView>
             <View style={{ flex: 1, padding: 10 }}>
-              {userList
+              {this.state.userData
                 .filter((user) =>
                   user.name
                     .toLowerCase()
@@ -50,13 +72,13 @@ class ChatScreen extends Component {
                         userPhoto: user.profileImage,
                       })
                     }
-                    key={user.id}
+                    key={user.uid}
                   >
                     <UserListItem
-                      key={user.id} // User List
+                      key={user.uid} // User List
                       name={user.name}
                       email={user.email}
-                      profileImage={user.profileImage}
+                      profileImage={require('../../assets/pp.png')}
                     />
                   </TouchableOpacity>
                 ))}
@@ -101,48 +123,6 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
 });
-
-
-const userList = [
-  {
-    id: 1,
-    name: 'Ahmet Yılmaz',
-    email: 'ahmet@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 2,
-    name: 'Ayşe Demir',
-    email: 'ayse@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 3,
-    name: 'Mehmet Şahin',
-    email: 'mehmet@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 4,
-    name: 'Fatma Yıldız',
-    email: 'fatma@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 5,
-    name: 'Ali Öztürk',
-    email: 'ali@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 6,
-    name: 'Zeynep Aktaş',
-    email: 'zeynep@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-
-];
-
 
 export default withNavigation(ChatScreen);
 

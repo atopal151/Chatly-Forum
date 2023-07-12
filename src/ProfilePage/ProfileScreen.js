@@ -47,7 +47,7 @@ class ProfileScreen extends React.Component {
         /></View>
         <View style={styles.body1}>
           <Text style={styles.text1}>{userStore.user}</Text>
-          <Text style={styles.text2}>{userStore.mail}</Text>
+          <Text style={styles.text2}>{userStore.mail || "--"}</Text>
         </View>
         <View style={styles.body2}>
           <View style={styles.roww1}>
@@ -55,7 +55,7 @@ class ProfileScreen extends React.Component {
               <Icon name="call" size={20} color="#8232E9" />
             </View>
             <View style={styles.row2}>
-              <Text style={styles.text2}> +90  533 222 55 88</Text>
+              <Text style={styles.text2}> +90  533 222 55 88 </Text>
             </View>
           </View>
           <View style={styles.roww2}>
@@ -63,7 +63,7 @@ class ProfileScreen extends React.Component {
               <Icon name="mail" size={20} color="#8232E9" />
             </View>
             <View style={styles.row2}>
-              <Text style={styles.text2}> {userStore.mail}</Text>
+              <Text style={styles.text2}> {userStore.mail || "--"}</Text>
             </View>
           </View>
         </View>

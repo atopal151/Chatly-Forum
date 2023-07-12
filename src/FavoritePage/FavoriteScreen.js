@@ -11,11 +11,34 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import UserListItem from '../component/UserListItem';
 import { withNavigation } from '@react-navigation/compat';
+import firestore from "@react-native-firebase/firestore";
+import auth from "@react-native-firebase/auth"
 
 class FavoriteScreen extends Component {
-  state = {
-    searchQuery: '',
+  constructor(props) {
+    super(props);
+    this.state = {
+      searchQuery: '',
+      userData: [],
+    };
+  }
+  loadUserData = () => {
+    firestore()
+      .collection('users')
+      .where(firestore.FieldPath.documentId(), '!=', auth().currentUser.uid)
+      .onSnapshot((snapshot) => {
+        const userData = snapshot.docs.map(doc => doc.data()).reverse();
+        this.setState({ userData });
+        console.log(userData);
+      }, (error) => {
+        console.log('Error loading other users data:', error);
+      });
   };
+  
+
+  componentDidMount() {
+    this.loadUserData();
+  }
 
   render() {
     const { navigation } = this.props;
@@ -35,7 +58,7 @@ class FavoriteScreen extends Component {
         <View style={styles.body2}>
           <ScrollView>
             <View style={{ flex: 1, padding: 10 }}>
-              {userList
+              {this.state.userData
                 .filter((user) =>
                   user.name
                     .toLowerCase()
@@ -45,29 +68,43 @@ class FavoriteScreen extends Component {
                   <TouchableOpacity
                     onPress={() =>
                       Alert.alert(
-                        user.name,
-                        user.email,
+                        "Kullanıcı Adı: " + user.name,
+                        "Mail: " + user.email || "--",
                         [
                           {
-                            text: 'Mesaj Gönder',
-                            onPress: () =>
+                            text: 'Sohbet Başlat',
+                            onPress: (() => {
+                              firestore()
+                                .collection('chats')
+                                .doc(auth().currentUser.uid)
+                                .collection('user')
+                                .doc(user.uid)
+                                .set({
+                                  name: `User` + user.uid,
+                                  uid: user.uid,
+                                  endMessageTime:firestore.FieldValue.serverTimestamp()
+                                })
+                                .then(() => {
+                                  console.log('Chats added!');
+                                });
                               navigation.navigate('MessageBoxScreen', {
                                 userName: user.name,
                                 userMail: user.email,
                                 userPhoto: user.profileImage,
-                              }),
+                              })
+                            })
                           },
                         ],
                         { cancelable: false }
                       )
                     }
-                    key={user.id}
+                    key={user.uid}
                   >
                     <UserListItem
-                      key={user.id}
+                      key={user.uid}
                       name={user.name}
                       email={user.email}
-                      profileImage={user.profileImage}
+                      profileImage={require('../../assets/pp.png')}
                     />
                   </TouchableOpacity>
                 ))}
@@ -112,130 +149,6 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
 });
-
-
-const userList = [
-  {
-    id: 1,
-    name: 'Ahmet Yılmaz',
-    email: 'ahmet@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 2,
-    name: 'Ayşe Demir',
-    email: 'ayse@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 3,
-    name: 'Mehmet Şahin',
-    email: 'mehmet@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 4,
-    name: 'Fatma Yıldız',
-    email: 'fatma@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 5,
-    name: 'Ali Öztürk',
-    email: 'ali@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 6,
-    name: 'Zeynep Aktaş',
-    email: 'zeynep@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 7,
-    name: 'Hasan Kaya',
-    email: 'hasan@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 8,
-    name: 'Gülay Topçu',
-    email: 'gulay@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 9,
-    name: 'Emre Öztürk',
-    email: 'emre@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 10,
-    name: 'Selin Yılmaz',
-    email: 'selin@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 11,
-    name: 'Murat Çelik',
-    email: 'murat@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 12,
-    name: 'Esra Akgün',
-    email: 'esra@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 13,
-    name: 'Kadir Kaya',
-    email: 'kadir@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 14,
-    name: 'Bilge Demir',
-    email: 'bilge@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 15,
-    name: 'Ömer Yıldız',
-    email: 'omer@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 16,
-    name: 'Gizem Öztürk',
-    email: 'gizem@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 17,
-    name: 'Cem Aktaş',
-    email: 'cem@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 18,
-    name: 'Aysun Kaya',
-    email: 'aysun@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 19,
-    name: 'Eren Topçu',
-    email: 'eren@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-  {
-    id: 20,
-    name: 'Deniz Şimşek',
-    email: 'deniz@example.com',
-    profileImage: require('../../assets/pp.png'),
-  },
-];
 
 
 export default withNavigation(FavoriteScreen);
