@@ -27,8 +27,6 @@ class LoginScreen extends Component {
       const currentUser = auth().currentUser;
       await getUserByUID(currentUser.uid);
       this.props.navigation.navigate("TabBar");
-    } else {
-      handleAlert();
     }
   };
 
@@ -57,12 +55,12 @@ class LoginScreen extends Component {
     }
   };
 
-  handleAnonymouslyLogin = () => { //anonim giriş yapmaya yarayan fonksiyon
-    auth()
+  handleAnonymouslyLogin = async () => { //anonim giriş yapmaya yarayan fonksiyon
+    await auth()
       .signInAnonymously()
       .then(() => {
         const currentUser = auth().currentUser.uid;
-        userStore.setUser("User"+currentUser)
+         userStore.setUser("User"+currentUser)
 
         firestore()
           .collection('users')
@@ -82,7 +80,8 @@ class LoginScreen extends Component {
         if (error.code === 'auth/operation-not-allowed') {
           console.log('Enable anonymous in your firebase console.');
         }
-        console.error(error);
+
+        console.error(error+"dddd");
       });
   };
 
@@ -217,8 +216,8 @@ const getUserByUID = async (uid) => { //kullanıcı uid ye göre veri çeken fon
       const userData = documentSnapshot.data();
       console.log('User Data:', userData);
       if (userData && userData.name) {
-        userStore.setUser(userData.name);
-        userStore.setMail(userData.email)
+        await userStore.setUser(userData.name);
+        await userStore.setMail(userData.email)
       }
       return userData;
     } else {

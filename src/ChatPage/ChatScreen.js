@@ -5,7 +5,9 @@ import {
   View,
   SafeAreaView,
   ScrollView,
+  RefreshControl,
   TouchableOpacity,
+  Text,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import UserListItem from '../component/UserListItem';
@@ -16,69 +18,117 @@ import auth from "@react-native-firebase/auth"
 class ChatScreen extends Component {
   state = {
     searchQuery: '',
-    userData:[]
+    userData: [],
+    refreshing: false,
   };
 
-  
-
-  loadUserData = () => { //paylaşılmış olan kullanıcı verilerini getiren fonksiyon
+  loadUserData = async () => {
     firestore()
       .collection('chats')
       .doc(auth().currentUser.uid)
       .collection('user')
       .onSnapshot((snapshot) => {
-        const userData = snapshot.docs.map(doc => doc.data()).reverse();
+        const userData = snapshot.docs.map((doc) => doc.data()).reverse();
         this.setState({ userData });
         console.log(userData);
       }, (error) => {
-        console.log('Error loading forum data:', error);
+        console.log('Veriler yüklenirken hata oluştu:', error);
       });
   };
-  componentDidMount(){
-    this.loadUserData()
+
+  chatDelete = async (uid) => {
+    try {
+      await firestore()
+        .collection('chats')
+        .doc(auth().currentUser.uid)
+        .collection('user')
+        .doc(uid)
+        .delete().then(() => {
+          console.log('Chat deleted!');
+        });
+
+      const messagesRef = firestore()
+        .collection('messages')
+        .doc(auth().currentUser.uid + "--" + uid)
+        .collection("chat");
+
+      messagesRef.get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          doc.ref.delete().then(() => {
+            console.log('Message deleted:', doc.id);
+          }).catch((error) => {
+            console.error('Message deletion failed:', error);
+          });
+        });
+      }).catch((error) => {
+        console.error('Query failed:', error);
+      });
+
+      this.loadUserData();
+    } catch (error) {
+      console.error('Delete operation failed:', error);
+    }
+  };
+
+  handleRefresh = () => {// yenileme alanı
+    this.setState({ refreshing: true });
+    this.loadUserData();
+    this.setState({ refreshing: false });
+  };
+
+  componentDidMount() {
+    this.loadUserData();
   }
 
   render() {
     const { navigation } = this.props;
+    const { refreshing } = this.state;
+
     return (
       <SafeAreaView style={styles.container}>
+        <View style={styles.headerStyle}>
+          <Text style={styles.headerTextStyle}>Sohbetler</Text>
+        </View>
         <View style={styles.body1}>
           <View style={styles.borderstyle}>
-            
             <TextInput
               style={styles.input}
-              placeholder="Arama yapın" 
+              placeholder="Arama yapın"
               placeholderTextColor="#888"
-              onChangeText={(text) => this.setState({ searchQuery: text })} // Filter
+              onChangeText={(text) => this.setState({ searchQuery: text })}
             />
             <Icon name={'search'} size={20} color="grey" />
           </View>
         </View>
         <View style={styles.body2}>
-          <ScrollView>
+          <ScrollView
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={this.handleRefresh} />
+            }
+          >
             <View style={{ flex: 1, padding: 10 }}>
               {this.state.userData
                 .filter((user) =>
-                  user.name
-                    .toLowerCase()
-                    .includes(this.state.searchQuery.toLowerCase()) // Filter function
+                  user.name.toLowerCase().includes(this.state.searchQuery.toLowerCase())
                 )
-                .map((user) => ( // User Map
+                .map((user) => (
                   <TouchableOpacity
+                    key={user.uid}
                     onPress={() =>
                       navigation.navigate('MessageBoxScreen', {
                         userName: user.name,
-                        userMail: user.email,
-                        userPhoto: user.profileImage,
+                        userMail: user.mail,
+                        userPhoto: require('../../assets/pp.png'),
+                        uid: user.uid,
                       })
                     }
-                    key={user.uid}
                   >
                     <UserListItem
-                      key={user.uid} // User List
                       name={user.name}
-                      email={user.email}
+                      email={user.mail}
                       profileImage={require('../../assets/pp.png')}
+                      iconName={"trash-outline"}
+                      onPress={() => this.chatDelete(user.uid)}
                     />
                   </TouchableOpacity>
                 ))}
@@ -122,9 +172,42 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginRight: 5,
   },
+  menuContainer: {
+    position: 'absolute',
+    top: 1,
+    right: 30,
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 16,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    padding: 10,
+    elevation: 10,
+    borderRadius: 8,
+  },
+  menuItem: {
+    fontSize: 18,
+    height: 30,
+    width: 100,
+    backgroundColor: 'white',
+    margin: 10,
+    borderRadius: 30,
+    paddingVertical: 5,
+  },
+  headerStyle: {
+    alignItems: "baseline",
+    margin: 10,
+    justifyContent: 'flex-start',
+  },
+  headerTextStyle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    margin: 10,
+    color: "#8232E9"
+  }
 });
 
 export default withNavigation(ChatScreen);
-
-
-

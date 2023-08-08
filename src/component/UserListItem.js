@@ -1,19 +1,26 @@
 import React from 'react';
-import { 
-  View, 
-  Text, 
-  Image, 
-  StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity
+} from 'react-native';
+import Icon from "react-native-vector-icons/Ionicons";
 
-const UserListItem = ({ name, email, profileImage }) => {
+
+
+const UserListItem = ({ name, email, profileImage, onPress,iconName }) => {
   return (
-   
     <View style={styles.container}>
       <Image source={profileImage} style={styles.profileImage} />
       <View style={styles.userInfo}>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.email}>{email || "--"}</Text>
       </View>
+      <TouchableOpacity onPress={()=>{onPress()}}> 
+        <Icon name={iconName} size={20} color="#8232E9" />
+      </TouchableOpacity>
     </View>
   );
 };

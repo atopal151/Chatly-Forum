@@ -7,6 +7,7 @@ import {
     ScrollView,
     TouchableOpacity,
     SafeAreaView,
+    RefreshControl,
     TextInput
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -14,8 +15,7 @@ import { withNavigation } from '@react-navigation/compat';
 import firestore from "@react-native-firebase/firestore";
 import ItemCard from '../component/ItemCard';
 import UserStore from '../component/UserStore';
-
-
+import BannerAd from '../component/BannerAd';
 
 class HomeScreen extends Component {
     constructor(props) {
@@ -24,7 +24,9 @@ class HomeScreen extends Component {
             searchVisible: false,
             searchQuery: '',
             forumData: [],
-            filteredItemCardData: []
+            filteredItemCardData: [],
+            docid: "",
+            refreshing: false
         };
     }
 
@@ -34,6 +36,11 @@ class HomeScreen extends Component {
             searchVisible: !searchVisible,
             searchQuery: ''
         });
+    };
+    handleRefresh = () => {// yenileme alanı
+        this.setState({ refreshing: true });
+        this.loadForumData();
+        this.setState({ refreshing: false });
     };
 
     handleSearchQueryChange = (text) => { //arama yapılacak metni yazdığımız andan itibaren filtre uygular
@@ -48,6 +55,7 @@ class HomeScreen extends Component {
 
 
     loadForumData = () => { //paylaşılmış olan forum verilerini getiren fonksiyon
+        this.docid = "";
         firestore()
             .collection('forum')
             .orderBy('createdAt', 'asc')
@@ -55,6 +63,7 @@ class HomeScreen extends Component {
                 const forumData = snapshot.docs.map(doc => doc.data()).reverse();
                 this.setState({ forumData });
                 console.log(forumData);
+
             }, (error) => {
                 console.log('Error loading forum data:', error);
             });
@@ -81,11 +90,12 @@ class HomeScreen extends Component {
 
     componentDidMount() { //ilk sayfa yüklenince verileri çeker
         this.loadForumData();
+        UserStore.setMessageCount()
     }
 
 
     render() {
-        const { searchVisible, searchQuery, filteredItemCardData, forumData } = this.state;
+        const { searchVisible, searchQuery, filteredItemCardData, forumData, refreshing } = this.state;
         const { navigation } = this.props;
         const displayedItemCardData = searchQuery ? filteredItemCardData : forumData;
         return (
@@ -105,7 +115,7 @@ class HomeScreen extends Component {
                     {!searchVisible && (
                         <Text style={styles.userTitle} ellipsizeMode="tail"
                             numberOfLines={1}>Hoşgeldin {
-                                <Text style={{ fontWeight: 700 }} >{UserStore.user}</Text>
+                                <Text style={{ fontWeight: 700, textTransform: 'uppercase' }} >{UserStore.user}</Text>
                             }</Text>
                     )}
                     <TouchableOpacity style={styles.searchButton}
@@ -208,20 +218,29 @@ class HomeScreen extends Component {
 
                 </ScrollView>
                 <View style={styles.body}>
-                    <ScrollView>
+                    <ScrollView refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={this.handleRefresh}
+                        />
+                    }>
                         {displayedItemCardData.map((item, index) => (
                             <ItemCard
                                 key={index}
                                 title={item.title}
                                 description={item.description}
-                                onPress={() =>
+                                onPress={() => {
+                                    console.log(item.saveDocId);
                                     navigation.navigate('ForumDetail', {
+                                        savedDocId: item.savedDocId,
                                         itemTitle: item.title,
                                         itemDescription: item.description,
-                                    })}
+                                    })
+                                }}
                             />
                         ))}
                     </ScrollView>
+                    
                 </View>
             </SafeAreaView>
         );

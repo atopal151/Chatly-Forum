@@ -27,6 +27,18 @@ function HomeStackScreen() {
     );
 }
 
+const ProfileStack = createNativeStackNavigator();
+
+function ProfileStackScreen() {
+    return (
+        <ProfileStack.Navigator >
+            <ProfileStack.Screen name="ProfileSreen" component={ProfileScreen} options={{ tabBarShowLabel: false, headerShown: false }} />
+            <ProfileStack.Screen name="ForumDetail" component={ForumDetail} options={{ tabBarShowLabel: false, headerShown: false }} />
+            
+        </ProfileStack.Navigator>
+    );
+}
+
 const ChatStack = createNativeStackNavigator();
 
 function ChatStackScreen() {
@@ -68,7 +80,7 @@ const TabBarIcon = ({ focused, name }) => {
         iconName = focused ? 'heart' : 'heart-outline';
         iconSize = focused ? 28 : 22;
         iconColor = focused ? '#8232E9' : '#AAAAAA';
-    } else if (name === 'ProfilScreen') {
+    } else if (name === 'ProfilStackScreen') {
         iconName = focused ? 'person' : 'person-outline';
         iconSize = focused ? 28 : 22;
         iconColor = focused ? '#8232E9' : '#AAAAAA';
@@ -96,7 +108,7 @@ function TabBar() {
             <Tab.Screen name="HomeStackScreen" component={HomeStackScreen} />
             <Tab.Screen name="ChatStackScreen" component={ChatStackScreen} />
             <Tab.Screen name="FavoriteStackScreen" component={FavoriteStackScreen} />
-            <Tab.Screen name="ProfilScreen" component={ProfileScreen} />
+            <Tab.Screen name="ProfilStackScreen" component={ProfileStackScreen} />
         </Tab.Navigator>
     );
 }

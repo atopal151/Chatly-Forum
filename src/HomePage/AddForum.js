@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
-import { Text, 
-  StyleSheet, 
-  View, 
-  SafeAreaView, 
-  TextInput, 
-  TouchableOpacity, 
-  Switch, 
-  Alert } from 'react-native';
+import {
+  Text,
+  StyleSheet,
+  View,
+  SafeAreaView,
+  TextInput,
+  TouchableOpacity,
+  Switch,
+  Alert
+} from 'react-native';
 import firestore from "@react-native-firebase/firestore"
+import auth from "@react-native-firebase/auth"
 
 export default class AddForum extends Component {
   constructor(props) {
@@ -39,7 +42,7 @@ export default class AddForum extends Component {
         { id: 20, name: 'Bahçe', checked: false },
         // Daha fazla kategori eklenebilir
       ],
-      
+
     };
   }
 
@@ -83,7 +86,7 @@ export default class AddForum extends Component {
         <View style={styles.categoryContainer}>
           {categories.map((category) => (
             <View key={category.id} style={styles.categoryItem}>
-              <Switch 
+              <Switch
                 value={category.checked}
                 onValueChange={() => this.handleCategoryToggle(category.id)}
                 thumbColor={category.checked ? '#8232E9' : '#8232E9'}
@@ -96,24 +99,38 @@ export default class AddForum extends Component {
         <TouchableOpacity style={styles.categoryButton} onPress={() => {
           const selectedCategories = categories.filter((category) => category.checked);
           const categoryNames = selectedCategories.map((category) => category.name);
+
           firestore()
             .collection('forum')
             .add({
               title: titletext,
               description: descriptiontext,
               categories: categoryNames,
+              shareUser: auth().currentUser.uid,
               createdAt: firestore.FieldValue.serverTimestamp()
             })
-            .then(() => {
-              Alert.alert(
-              'Uyarı!',
-              'Paylaşımın alındı. Teşekkürler...',
-              [
-                { text: 'Tamam', onPress: () => {this.props.navigation.goBack()} }
-              ],
-              { cancelable: false }
-            );
+            .then((docRef) => {
+              const docId = docRef.id; // Yeni oluşturulan belgenin doc.id değerini alır
+              firestore().collection('forum').doc(docId).update({
+                savedDocId: docId
+              }).then(() => {
+                Alert.alert(
+                  'Uyarı!',
+                  'Paylaşımın alındı. Teşekkürler...',
+                  [
+                    { text: 'Tamam', onPress: () => { this.props.navigation.goBack() } }
+                  ],
+                  { cancelable: false }
+                );
+              }).catch((error) => {
+                console.log('Error saving docId:', error);
+              });
+            })
+            .catch((error) => {
+              console.log('Error creating document:', error);
             });
+
+
         }}>
           <Text style={styles.categoryText}>Paylaş</Text>
         </TouchableOpacity>

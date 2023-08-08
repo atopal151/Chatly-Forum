@@ -9,12 +9,15 @@ import {
     TouchableOpacity
 } from 'react-native';
 import Icon from "react-native-vector-icons/Ionicons";
+import firestore from "@react-native-firebase/firestore";
+import auth from "@react-native-firebase/auth";
+import UserStore from '../component/UserStore';
 
 export default class ForumDetail extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            messages: [],
+            messagesData: [],
             text: '',
             showTextInput: false,
         };
@@ -28,43 +31,58 @@ export default class ForumDetail extends Component {
     };
 
     sendMessage = () => { //mesaj gönderme fonksiyonu
-        const { text, messages } = this.state;
-        if (text.trim() === '') {
-            return;
-        }
-        const newMessage = {
-            id: messages.length + 1,
-            text: text.trim(),
-            sender: 'user'
-        };
-        this.setState({
-            messages: [...messages, newMessage],
-            text: '',
-            showTextInput: false
-        });
+        const { savedDocId } = this.props.route.params;
+        console.log(savedDocId);
+        firestore()
+            .collection('forumMessages')
+            .doc(savedDocId)
+            .collection('chat')
+            .doc()
+            .set({
+                message: this.state.text,
+                shareMessage: auth().currentUser.uid,
+                userName:UserStore.user,
+                messageTime: firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+                console.log('Message added!');
+            });
     };
 
-    renderMessage = ({ item }) => { //mesaj görünümü
-        const { sender, text } = item;
-        const isUser = sender === 'user';
-
-        return (
-            <View style={[styles.messageContainer, isUser ? styles.userMessage : styles.otherMessage]}>
-                <View style={styles.messageContent}>
-                    <Text style={styles.messageText}>{text}</Text>
-                </View>
-            </View>
-        );
+    loadMessageData = () => {
+        const { savedDocId } = this.props.route.params;
+        firestore()
+            .collection('forumMessages')
+            .doc(savedDocId)
+            .collection('chat')
+            .orderBy('messageTime', 'asc')
+            .onSnapshot(
+                (snapshot) => {
+                    const messageData = snapshot.docs.map((doc) => doc.data()).reverse();
+                    this.setState({ messages: messageData });
+                    console.log(messageData);
+                },
+                (error) => {
+                    console.log('Error loading forum data:', error);
+                }
+            );
     };
+
+
+    componentDidMount() {
+        this.loadMessageData()
+    }
+
+
 
     render() {
         const { messages, text, showTextInput } = this.state;
-        const { itemTitle, itemDescription } = this.props.route.params;
+        const { itemTitle, itemDescription, savedDocId } = this.props.route.params;
 
         return (
             <SafeAreaView style={styles.container}>
                 <View style={styles.headerStyle}>
-                    <Text style={{ fontWeight: "700", color: "white" }}> {itemTitle} </Text>
+                    <Text style={{ fontWeight: "800", color: "#8232E9", fontSize: 18 }}> {itemTitle} </Text>
                 </View>
                 <View style={styles.describeStyle}>
                     <Text style={{ fontWeight: "700" }}>Açıklama: {
@@ -74,12 +92,56 @@ export default class ForumDetail extends Component {
 
                 <View style={styles.bodyStyle}>
                     <FlatList
-                        data={messages}
-                        renderItem={this.renderMessage}
-                        keyExtractor={(item) => item.id.toString()}
+                        style={{ marginBottom: 5 }}
+                        data={this.state.messages}
+                        renderItem={({ item }) => (
+
+                            <View
+                                style={[
+                                    styles.messageContainer,
+                                    item.shareMessage === auth().currentUser.uid ? styles.userMessage : styles.otherMessage,
+                                    {
+                                        alignSelf: item.shareMessage === auth().currentUser.uid ? 'flex-end' : 'flex-start'
+                                    }
+                                ]}
+                            >
+                                <View style={styles.messageContent}>
+                                    <Text
+                                        style={[
+                                            styles.messageText,
+                                            item.shareMessage === auth().currentUser.uid ? styles.userMessage : styles.otherMessage,
+                                            {
+                                                color: item.shareMessage === auth().currentUser.uid ? 'white' : 'black'
+                                            }
+                                        ]}
+                                    >
+                                        {item.message}
+                                    </Text>
+                                </View>
+
+                                <View style={styles.messageTimeContainer}>
+                                    <Text style={[styles.userNameStyle,, item.shareMessage === auth().currentUser.uid ? styles.userMessage : styles.otherMessage,
+                                    {
+                                        color: item.shareMessage === auth().currentUser.uid ? 'white' : 'black'
+                                    }]}>
+                                        {item.userName||"--"}
+                                    </Text>
+                                </View>
+                                <View style={styles.messageTimeContainer}>
+                                    <Text style={[styles.messageTime, item.shareMessage === auth().currentUser.uid ? styles.userMessage : styles.otherMessage,
+                                    {
+                                        color: item.shareMessage === auth().currentUser.uid ? 'white' : 'black'
+                                    }]}>
+                                        {item.messageTime && item.messageTime.toDate().toLocaleString()}
+                                    </Text>
+                                </View>
+                            </View>
+                        )}
+                        keyExtractor={(item, index) => index.toString()}
                         contentContainerStyle={styles.messagesContainer}
                         inverted
                     />
+
                     <View style={{ flexDirection: "row" }}>
                         <View style={{ flex: 5 }}>
                             {showTextInput && (
@@ -128,7 +190,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         margin: 10,
         borderRadius: 25,
-        backgroundColor: "#8232E9"
     },
     describeStyle: {
         flex: 1,
@@ -172,32 +233,36 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
     },
     messageContainer: {
-        alignSelf: 'flex-start',
-        backgroundColor: '#eaeaea',
+        backgroundColor: '#8232E9',
         borderRadius: 10,
         margin: 5,
         padding: 10,
-        maxWidth: '70%',
+        maxWidth: '70%'
     },
     userMessage: {
         alignSelf: 'flex-end',
         borderBottomLeftRadius: 25,
         borderTopStartRadius: 25,
         borderBottomRightRadius: 25,
-        backgroundColor: '#d6afee',
+        backgroundColor: '#8232E9'
     },
     otherMessage: {
-        alignSelf: 'center',
+        alignSelf: 'flex-start',
+        borderBottomRightRadius: 25,
+        borderTopEndRadius: 25,
+        borderBottomLeftRadius: 25,
+        backgroundColor: '#eaeaea'
     },
     messageContent: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     messageText: {
         fontSize: 16,
         color: 'white',
         margin: 5,
         marginLeft: 5,
+        fontWeight:"600"
     },
     inputContainer: {
         flexDirection: 'row',
@@ -225,7 +290,7 @@ const styles = StyleSheet.create({
     addButton: {
         backgroundColor: 'blue',
         borderRadius: 60,
-        backgroundColor: "#8232E9",
+        backgroundColor: "#d6afee",
         paddingHorizontal: 15,
         paddingVertical: 15,
         marginRight: 10,
@@ -242,4 +307,19 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         marginRight: 10
     },
+    messageTimeContainer: {
+        borderRadius: 5,
+        paddingVertical: 2,
+        paddingHorizontal: 5,
+        marginTop: 5,
+        alignSelf: 'flex-start',
+    },
+    messageTime: {
+        fontSize: 10,
+    },
+    userNameStyle:{
+        textTransform: 'uppercase',
+        fontSize: 11,
+        fontWeight:"500"
+    }
 });
