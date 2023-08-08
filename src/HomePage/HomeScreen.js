@@ -88,7 +88,7 @@ class HomeScreen extends Component {
     };
 
 
-    componentDidMount() { //ilk sayfa yüklenince verileri çeker
+    componentDidMount() { //ilk sayfa yüklenince verileri çeker.
         this.loadForumData();
         UserStore.setMessageCount()
     }
